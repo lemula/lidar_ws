@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="excavator">
+  <link
+    name="world" />
+  <joint
+    name="world_to_base"
+    type="fixed">
+    <origin
+      xyz="-0.06 0 -0.18"
+      rpy="0 0 0" />
+    <parent
+      link="world" />
+    <child
+      link="base_link" />
+  </joint>
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <mass
+        value="41.3147963267949" />
+      <inertia
+        ixx="0.770559365895308"
+        ixy="2.48926455700839E-16"
+        ixz="3.93418960803584E-17"
+        iyy="1.78668096589531"
+        iyz="3.84096900551733E-17"
+        izz="2.42266873852123" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://excavator_description/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision name="base_chassis_box">
+      <origin
+        xyz="0 0 -0.11"
+        rpy="0 0 0" />
+      <geometry>
+        <box size="0.72 0.46 0.22" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="swing_link">
+    <inertial>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <mass
+        value="4.9357" />
+      <inertia
+        ixx="0.040833"
+        ixy="-0.00064685"
+        ixz="-0.0022191"
+        iyy="0.038399"
+        iyz="0.00010444"
+        izz="0.071254" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://excavator_description/meshes/swing_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1.0 0.6667 0.0 1.0" />
+      </material>
+    </visual>
+    <collision name="swing_platform_box">
+      <origin
+        xyz="-0.10 0 0.04"
+        rpy="0 0 0" />
+      <geometry>
+        <box size="0.51 0.36 0.08" />
+      </geometry>
+    </collision>
+    <collision name="cab_box">
+      <origin
+        xyz="-0.14 0 0.145"
+        rpy="0 0 0" />
+      <geometry>
+        <box size="0.30 0.32 0.17" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="swing_joint"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="swing_link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="boom_link">
+    <inertial>
+      <origin
+        xyz="0.406939368 0.0010288 0.0714421954"
+        rpy="-1.570796327 0.186814715 0" />
+      <mass
+        value="38.93" />
+      <inertia
+        ixx="0.10554"
+        ixy="0.16561"
+        ixz="-1.7974E-06"
+        iyy="1.2732"
+        iyz="8.6025E-07"
+        izz="1.3176" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="-1.570796327 0.186814715 0" />
+      <geometry>
+        <mesh
+          filename="package://excavator_description/meshes/boom_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1.0 0.6667 0.0 1.0" />
+      </material>
+    </visual>
+    <collision name="boom_inner_box">
+      <origin
+        xyz="0.19 0 0.04"
+        rpy="0 -0.05 0" />
+      <geometry>
+        <box size="0.42 0.12 0.12" />
+      </geometry>
+    </collision>
+    <collision name="boom_outer_box">
+      <origin
+        xyz="0.59 0 0.12"
+        rpy="0 0.18 0" />
+      <geometry>
+        <box size="0.43 0.12 0.12" />
+      </geometry>
+    </collision>
+    <collision name="boom_cylinder">
+      <origin
+        xyz="0.35 0 0.16"
+        rpy="0 1.570796327 0" />
+      <geometry>
+        <cylinder radius="0.025" length="0.45" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="boom_joint"
+    type="revolute">
+    <origin
+      xyz="0.05 0 0"
+      rpy="0 0.43 0" />
+    <parent
+      link="swing_link" />
+    <child
+      link="boom_link" />
+    <axis
+      xyz="0 -1 0" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="arm_link">
+    <inertial>
+      <origin
+        xyz="0.0954817587 0.001029 0.0323566644"
+        rpy="-1.570796327 -0.000719049 0" />
+      <mass
+        value="17.126" />
+      <inertia
+        ixx="0.020558"
+        ixy="-0.028399"
+        ixz="-9.5422E-15"
+        iyy="0.2363"
+        iyz="-2.0867E-15"
+        izz="0.24251" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="-1.570796327 -0.000719049 0" />
+      <geometry>
+        <mesh
+          filename="package://excavator_description/meshes/arm_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1.0 0.6667 0.0 1.0" />
+      </material>
+    </visual>
+    <collision name="arm_inner_box">
+      <origin
+        xyz="0.015 0 0.055"
+        rpy="0 -0.22 0" />
+      <geometry>
+        <box size="0.28 0.065 0.10" />
+      </geometry>
+    </collision>
+    <collision name="arm_outer_box">
+      <origin
+        xyz="0.255 0 0.04"
+        rpy="0 0.12 0" />
+      <geometry>
+        <box size="0.28 0.065 0.10" />
+      </geometry>
+    </collision>
+    <collision name="arm_cylinder">
+      <origin
+        xyz="0.13 0 0.115"
+        rpy="0 1.570796327 0" />
+      <geometry>
+        <cylinder radius="0.02" length="0.25" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="arm_joint"
+    type="revolute">
+    <origin
+      xyz="0.78 0 0"
+      rpy="0 3.31 0" />
+    <parent
+      link="boom_link" />
+    <child
+      link="arm_link" />
+    <axis
+      xyz="0 -1 0" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="bucket_link">
+    <inertial>
+      <origin
+        xyz="0.093123 0.0010335 0.027716"
+        rpy="-1.570796327 0 0" />
+      <mass
+        value="0.57431" />
+      <inertia
+        ixx="0.0034997"
+        ixy="-0.0004223"
+        ixz="1.0595E-07"
+        iyy="0.0041016"
+        iyz="1.4277E-07"
+        izz="0.0023878" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="-1.570796327 0 0" />
+      <geometry>
+        <mesh
+          filename="package://excavator_description/meshes/bucket_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1.0 0.6667 0.0 1.0" />
+      </material>
+    </visual>
+    <collision name="bucket_convex_hull">
+      <origin
+        xyz="0 0 0"
+        rpy="-1.570796327 0 0" />
+      <geometry>
+        <mesh
+          filename="package://excavator_description/meshes/bucket_collision_convex.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="bucket_joint"
+    type="revolute">
+    <origin
+      xyz="0.35 0 0"
+      rpy="0 3.48 0" />
+    <parent
+      link="arm_link" />
+    <child
+      link="bucket_link" />
+    <axis
+      xyz="0 -1 0" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link name="bucket_tip">
+    <collision name="bucket_tip_sphere">
+      <geometry>
+        <sphere radius="0.015" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="bucket_to_tip"
+    type="fixed">
+    <origin
+      xyz="0.2 0 0"
+      rpy="0 1.1 0" />
+    <parent
+      link="bucket_link" />
+    <child
+      link="bucket_tip" />
+  </joint>
+</robot>
