@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>robot_body_filter</name>
+  <version>0.1.0</version>
+  <description>ROS 2 excavator self-filter based on URDF collision geometry.</description>
+  <maintainer email="user@example.com">zhaoshuai</maintainer>
+  <license>BSD-3-Clause</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>ament_index_cpp</depend>
+  <depend>geometry_msgs</depend>
+  <depend>pcl_ros</depend>
+  <depend>rclcpp</depend>
+  <depend>sensor_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>tf2</depend>
+  <depend>tf2_ros</depend>
+  <depend>urdf</depend>
+
+  <exec_depend>ament_index_python</exec_depend>
+  <exec_depend>excavator_description</exec_depend>
+  <exec_depend>joint_state_publisher</exec_depend>
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>rslidar_sdk</exec_depend>
+  <exec_depend>rviz2</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

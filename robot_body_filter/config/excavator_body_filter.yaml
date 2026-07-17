@@ -1,0 +1,10 @@
+robot_body_filter:
+  ros__parameters:
+    input_topic: /localmap/cropped_points
+    output_topic: /localmap/body_filtered_points
+    robot_description_topic: /robot_description
+    padding: 0.02
+    scale: 1.0
+    use_latest_tf: true
+    require_all_transforms: true
+    ignored_links: [world]
