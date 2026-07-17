@@ -1,0 +1,107 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Class: rviz_default_plugins/Grid
+      Enabled: true
+      Name: ReferenceGrid
+      Plane: XY
+      Cell Size: 1
+      Plane Cell Count: 30
+    - Alpha: 0.75
+      Autocompute Intensity Bounds: true
+      Class: grid_map_rviz_plugin/GridMap
+      Color Layer: soil_height
+      Color Transformer: GridMapLayer
+      Enabled: true
+      Height Layer: surface_height
+      Height Transformer: GridMapLayer
+      History Length: 1
+      Max Color: 255; 40; 20
+      Min Color: 20; 110; 255
+      Name: TerrainHeightMap
+      Show Grid Lines: false
+      Topic: /terrain/grid_map
+      Unreliable: false
+      Use Rainbow: true
+      Value: true
+    - Alpha: 0.35
+      Class: rviz_default_plugins/Map
+      Color Scheme: costmap
+      Draw Behind: false
+      Enabled: false
+      Name: CleanPileMask
+      Topic:
+        Depth: 1
+        Durability Policy: Transient Local
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /digging/pile_mask
+      Update Topic:
+        Depth: 1
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: ""
+      Use Timestamp: false
+      Value: false
+    - Alpha: 0.45
+      Class: rviz_default_plugins/Map
+      Color Scheme: raw
+      Draw Behind: false
+      Enabled: false
+      Name: CandidateScoreMap
+      Topic:
+        Depth: 1
+        Durability Policy: Transient Local
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /digging/candidate_scores
+      Update Topic:
+        Depth: 1
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: ""
+      Use Timestamp: false
+      Value: false
+    - Class: rviz_default_plugins/MarkerArray
+      Enabled: true
+      Topic:
+        Depth: 1
+        Durability Policy: Transient Local
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /digging/markers
+      Name: DigCandidatesAndEntryPoint
+      Namespaces:
+        {}
+      Queue Size: 10
+      Value: true
+  Enabled: true
+  Global Options:
+    Background Color: 48; 48; 48
+    Fixed Frame: world
+    Frame Rate: 30
+  Name: root
+  Tools:
+    - Class: rviz_default_plugins/Interact
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/Select
+  Value: true
+Views:
+  Current:
+    Class: rviz_default_plugins/Orbit
+    Distance: 16
+    Focal Point:
+      X: 4
+      Y: 0
+      Z: 0
+    Name: Current View
+    Pitch: 0.65
+    Yaw: 3.14
+Window Geometry:
+  Height: 900
+  Width: 1300

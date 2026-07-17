@@ -1,11 +1,39 @@
-dig_point_scaffold:
+excavator_dig_point:
   ros__parameters:
-    world_frame: world
-    bucket_tip_frame: bucket_tip
-    enable_selection: false
-    maximum_map_age_sec: 0.50
-    minimum_confidence: 0.70
-    minimum_reach_m: 1.0
-    maximum_reach_m: 10.0
-    edge_margin_m: 0.50
+    input_topic: /terrain/grid_map
+    required_frame: world
+    entry_point_topic: /digging/entry_point
+    entry_info_topic: /digging/entry_point_info
+    markers_topic: /digging/markers
+    pile_mask_topic: /digging/pile_mask
+    score_map_topic: /digging/candidate_scores
 
+    maximum_map_age_sec: 1.0
+    minimum_valid_cells: 50
+    minimum_soil_height: 0.15
+    minimum_confidence: 0.70
+    minimum_points_per_cell: 3
+
+    opening_radius_cells: 1
+    closing_radius_cells: 1
+    minimum_pile_area: 0.12
+    pile_tracking_max_distance: 1.0
+    pile_track_timeout_frames: 15
+
+    minimum_relative_height: 0.15
+    maximum_relative_height: 0.80
+    minimum_slope_deg: 10.0
+    maximum_slope_deg: 45.0
+    minimum_edge_distance_cells: 1.0
+    edge_score_saturation_cells: 4.0
+    local_window_radius: 0.15
+    minimum_local_valid_ratio: 0.70
+    roughness_normalization: 0.10
+    minimum_candidate_score: 0.45
+    surface_fit_radius_cells: 2
+
+    minimum_stable_frames: 3
+    maximum_target_jump_cells: 3.0
+    maximum_candidate_dropout_frames: 10
+    switch_score_margin: 0.10
+    maximum_candidate_markers: 200

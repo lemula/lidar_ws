@@ -1,19 +1,32 @@
 <?xml version="1.0"?>
 <package format="3">
   <name>excavator_dig_point</name>
-  <version>0.1.0</version>
-  <description>Digging-point selection boundary for height maps and excavator pose.</description>
-  <maintainer email="maintainer@example.com">maintainer</maintainer>
+  <version>0.2.0</version>
+  <description>Terrain-only digging entry-point selection from GridMap elevation layers.</description>
+  <maintainer email="user@example.com">zhaoshuai</maintainer>
   <license>Apache-2.0</license>
 
-  <buildtool_depend>ament_python</buildtool_depend>
-  <exec_depend>excavator_interfaces</exec_depend>
-  <exec_depend>grid_map_msgs</exec_depend>
-  <exec_depend>rclpy</exec_depend>
-  <exec_depend>tf2_ros</exec_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>geometry_msgs</depend>
+  <depend>grid_map_core</depend>
+  <depend>grid_map_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>rclcpp</depend>
+  <depend>std_msgs</depend>
+  <depend>visualization_msgs</depend>
+
+  <build_depend>rosidl_default_generators</build_depend>
+  <exec_depend>rosidl_default_runtime</exec_depend>
+  <member_of_group>rosidl_interface_packages</member_of_group>
+
+  <exec_depend>ament_index_python</exec_depend>
+  <exec_depend>excavator_height_map</exec_depend>
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>rviz2</exec_depend>
 
   <export>
-    <build_type>ament_python</build_type>
+    <build_type>ament_cmake</build_type>
   </export>
 </package>
-

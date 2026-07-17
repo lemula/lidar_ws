@@ -13,6 +13,11 @@ excavator_height_map:
 
     minimum_ground_points_per_cell: 3
     fill_radius_cells: 2
+    use_global_ground_plane: true
+    ground_plane_inlier_threshold: 0.03
+    ground_plane_minimum_cells: 30
+    ground_plane_ransac_iterations: 300
+    maximum_ground_plane_slope_deg: 20.0
     maximum_slope_deg: 25.0
     maximum_roughness: 0.08
     maximum_step_height: 0.25

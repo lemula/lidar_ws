@@ -5,7 +5,10 @@
 #include <sensor_msgs/point_cloud2_iterator.hpp>
 #include <std_msgs/msg/float32_multi_array.hpp>
 
+#include <Eigen/Dense>
+
 #include <algorithm>
+#include <array>
 #include <chrono>
 #include <cmath>
 #include <cstddef>
@@ -14,6 +17,7 @@
 #include <limits>
 #include <memory>
 #include <mutex>
+#include <random>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -36,6 +40,13 @@ struct CellStatistics
   double ground_squared_sum{0.0};
   float maximum_surface{-std::numeric_limits<float>::infinity()};
   float maximum_nonground{-std::numeric_limits<float>::infinity()};
+};
+
+struct PlaneSample
+{
+  double x{0.0};
+  double y{0.0};
+  double z{0.0};
 };
 
 }  // namespace
@@ -62,6 +73,16 @@ public:
     minimum_ground_points_ = declare_parameter<int>(
       "minimum_ground_points_per_cell", 3);
     fill_radius_cells_ = declare_parameter<int>("fill_radius_cells", 2);
+    use_global_ground_plane_ = declare_parameter<bool>(
+      "use_global_ground_plane", true);
+    ground_plane_inlier_threshold_ = declare_parameter<double>(
+      "ground_plane_inlier_threshold", 0.03);
+    ground_plane_minimum_cells_ = declare_parameter<int>(
+      "ground_plane_minimum_cells", 30);
+    ground_plane_ransac_iterations_ = declare_parameter<int>(
+      "ground_plane_ransac_iterations", 300);
+    maximum_ground_plane_slope_deg_ = declare_parameter<double>(
+      "maximum_ground_plane_slope_deg", 20.0);
     maximum_slope_deg_ = declare_parameter<double>("maximum_slope_deg", 25.0);
     maximum_roughness_ = declare_parameter<double>("maximum_roughness", 0.08);
     maximum_step_height_ = declare_parameter<double>("maximum_step_height", 0.25);
@@ -72,6 +93,11 @@ public:
     if (minimum_ground_points_ < 1 || fill_radius_cells_ < 0) {
       throw std::invalid_argument(
               "minimum_ground_points_per_cell must be >= 1 and fill_radius_cells >= 0");
+    }
+    if (ground_plane_inlier_threshold_ <= 0.0 || ground_plane_minimum_cells_ < 3 ||
+      ground_plane_ransac_iterations_ < 1 || maximum_ground_plane_slope_deg_ <= 0.0)
+    {
+      throw std::invalid_argument("invalid global ground plane parameters");
     }
 
     auto output_qos = rclcpp::QoS(1).reliable().transient_local();
@@ -220,6 +246,147 @@ private:
     }
   }
 
+  bool applyGlobalGroundPlane(grid_map::GridMap & map) const
+  {
+    if (!use_global_ground_plane_) {
+      return false;
+    }
+
+    std::vector<PlaneSample> samples;
+    const auto & measured_ground = map["ground_height"];
+    samples.reserve(static_cast<std::size_t>(measured_ground.size()));
+    for (int row = 0; row < measured_ground.rows(); ++row) {
+      for (int column = 0; column < measured_ground.cols(); ++column) {
+        if (!std::isfinite(measured_ground(row, column))) {
+          continue;
+        }
+        grid_map::Position position;
+        if (!map.getPosition(grid_map::Index(row, column), position)) {
+          continue;
+        }
+        samples.push_back({position.x(), position.y(), measured_ground(row, column)});
+      }
+    }
+    if (samples.size() < static_cast<std::size_t>(ground_plane_minimum_cells_)) {
+      return false;
+    }
+
+    std::mt19937 generator(static_cast<std::uint32_t>(map.getTimestamp()));
+    std::uniform_int_distribution<std::size_t> distribution(0U, samples.size() - 1U);
+    Eigen::Vector3d best_coefficients = Eigen::Vector3d::Zero();
+    std::size_t best_inlier_count = 0U;
+    double best_residual_sum = std::numeric_limits<double>::infinity();
+    const double maximum_plane_gradient = std::tan(
+      maximum_ground_plane_slope_deg_ / kRadiansToDegrees);
+
+    for (int iteration = 0; iteration < ground_plane_ransac_iterations_; ++iteration) {
+      const std::size_t first = distribution(generator);
+      std::size_t second = distribution(generator);
+      std::size_t third = distribution(generator);
+      if (first == second || first == third || second == third) {
+        continue;
+      }
+      Eigen::Matrix3d design;
+      Eigen::Vector3d heights;
+      const std::array<std::size_t, 3> indices{first, second, third};
+      for (int row = 0; row < 3; ++row) {
+        const auto & sample = samples[indices[static_cast<std::size_t>(row)]];
+        design(row, 0) = sample.x;
+        design(row, 1) = sample.y;
+        design(row, 2) = 1.0;
+        heights(row) = sample.z;
+      }
+      if (std::abs(design.determinant()) < 1.0e-9) {
+        continue;
+      }
+      const Eigen::Vector3d coefficients = design.fullPivLu().solve(heights);
+      if (!coefficients.allFinite() ||
+        std::hypot(coefficients(0), coefficients(1)) > maximum_plane_gradient)
+      {
+        continue;
+      }
+
+      std::size_t inlier_count = 0U;
+      double residual_sum = 0.0;
+      for (const auto & sample : samples) {
+        const double predicted =
+          coefficients(0) * sample.x + coefficients(1) * sample.y + coefficients(2);
+        const double residual = std::abs(sample.z - predicted);
+        if (residual <= ground_plane_inlier_threshold_) {
+          ++inlier_count;
+          residual_sum += residual;
+        }
+      }
+      if (inlier_count > best_inlier_count ||
+        (inlier_count == best_inlier_count && residual_sum < best_residual_sum))
+      {
+        best_inlier_count = inlier_count;
+        best_residual_sum = residual_sum;
+        best_coefficients = coefficients;
+      }
+    }
+
+    if (best_inlier_count < static_cast<std::size_t>(ground_plane_minimum_cells_)) {
+      return false;
+    }
+
+    Eigen::MatrixXd design(static_cast<Eigen::Index>(best_inlier_count), 3);
+    Eigen::VectorXd heights(static_cast<Eigen::Index>(best_inlier_count));
+    Eigen::Index inlier_index = 0;
+    for (const auto & sample : samples) {
+      const double predicted =
+        best_coefficients(0) * sample.x + best_coefficients(1) * sample.y +
+        best_coefficients(2);
+      if (std::abs(sample.z - predicted) > ground_plane_inlier_threshold_) {
+        continue;
+      }
+      design(inlier_index, 0) = sample.x;
+      design(inlier_index, 1) = sample.y;
+      design(inlier_index, 2) = 1.0;
+      heights(inlier_index) = sample.z;
+      ++inlier_index;
+    }
+    const Eigen::Vector3d coefficients =
+      design.colPivHouseholderQr().solve(heights);
+    if (!coefficients.allFinite() ||
+      std::hypot(coefficients(0), coefficients(1)) > maximum_plane_gradient)
+    {
+      return false;
+    }
+
+    auto & ground = map["ground_height"];
+    auto & confidence = map["confidence"];
+    const auto & surface = map["surface_height"];
+    const auto & point_count = map["point_count"];
+    for (int row = 0; row < ground.rows(); ++row) {
+      for (int column = 0; column < ground.cols(); ++column) {
+        if (!std::isfinite(surface(row, column))) {
+          ground(row, column) = kNaN;
+          continue;
+        }
+        grid_map::Position position;
+        map.getPosition(grid_map::Index(row, column), position);
+        ground(row, column) = static_cast<float>(
+          coefficients(0) * position.x() + coefficients(1) * position.y() +
+          coefficients(2));
+        if (!std::isfinite(confidence(row, column)) &&
+          std::isfinite(point_count(row, column)))
+        {
+          confidence(row, column) = std::min(
+            1.0F, point_count(row, column) /
+            static_cast<float>(minimum_ground_points_ * 2));
+        }
+      }
+    }
+
+    RCLCPP_INFO_THROTTLE(
+      get_logger(), *get_clock(), 3000,
+      "Ground plane: z=%.4fx%+.4fy%+.4f, inliers=%zu/%zu",
+      coefficients(0), coefficients(1), coefficients(2),
+      best_inlier_count, samples.size());
+    return true;
+  }
+
   static bool gradient(
     const grid_map::Matrix & height, int row, int column, int dr, int dc,
     double resolution, double & value)
@@ -274,8 +441,8 @@ private:
 
         double gradient_x = 0.0;
         double gradient_y = 0.0;
-        const bool has_x = gradient(ground, row, column, 1, 0, resolution_, gradient_x);
-        const bool has_y = gradient(ground, row, column, 0, 1, resolution_, gradient_y);
+        const bool has_x = gradient(surface, row, column, 1, 0, resolution_, gradient_x);
+        const bool has_y = gradient(surface, row, column, 0, 1, resolution_, gradient_y);
         if (has_x || has_y) {
           slope(row, column) = static_cast<float>(
             std::atan(std::hypot(gradient_x, gradient_y)) * kRadiansToDegrees);
@@ -380,6 +547,7 @@ private:
       }
     }
 
+    applyGlobalGroundPlane(map);
     fillGroundHoles(map);
     computeDerivedLayers(map);
 
@@ -404,6 +572,11 @@ private:
   double center_y_{0.0};
   int minimum_ground_points_{3};
   int fill_radius_cells_{2};
+  bool use_global_ground_plane_{true};
+  double ground_plane_inlier_threshold_{0.03};
+  int ground_plane_minimum_cells_{30};
+  int ground_plane_ransac_iterations_{300};
+  double maximum_ground_plane_slope_deg_{20.0};
   double maximum_slope_deg_{25.0};
   double maximum_roughness_{0.08};
   double maximum_step_height_{0.25};

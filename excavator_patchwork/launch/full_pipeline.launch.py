@@ -13,10 +13,22 @@ def generate_launch_description():
     body_filter_share = Path(get_package_share_directory("robot_body_filter"))
     patchwork_share = Path(get_package_share_directory("excavator_patchwork"))
     start_rviz = LaunchConfiguration("start_rviz")
+    crop_min_x = LaunchConfiguration("crop_min_x")
+    crop_max_x = LaunchConfiguration("crop_max_x")
+    crop_min_y = LaunchConfiguration("crop_min_y")
+    crop_max_y = LaunchConfiguration("crop_max_y")
+    crop_min_z = LaunchConfiguration("crop_min_z")
+    crop_max_z = LaunchConfiguration("crop_max_z")
 
     return LaunchDescription(
         [
             DeclareLaunchArgument("start_rviz", default_value="true"),
+            DeclareLaunchArgument("crop_min_x", default_value="-2.0"),
+            DeclareLaunchArgument("crop_max_x", default_value="2.0"),
+            DeclareLaunchArgument("crop_min_y", default_value="-2.0"),
+            DeclareLaunchArgument("crop_max_y", default_value="2.0"),
+            DeclareLaunchArgument("crop_min_z", default_value="-2.0"),
+            DeclareLaunchArgument("crop_max_z", default_value="5.0"),
             IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(
                     str(
@@ -25,7 +37,15 @@ def generate_launch_description():
                         / "excavator_body_filter.launch.py"
                     )
                 ),
-                launch_arguments={"start_rviz": "false"}.items(),
+                launch_arguments={
+                    "start_rviz": "false",
+                    "crop_min_x": crop_min_x,
+                    "crop_max_x": crop_max_x,
+                    "crop_min_y": crop_min_y,
+                    "crop_max_y": crop_max_y,
+                    "crop_min_z": crop_min_z,
+                    "crop_max_z": crop_max_z,
+                }.items(),
             ),
             Node(
                 package="excavator_patchwork",

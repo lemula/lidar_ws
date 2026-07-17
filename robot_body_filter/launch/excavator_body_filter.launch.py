@@ -48,12 +48,12 @@ def generate_launch_description():
             ),
             DeclareLaunchArgument("start_rviz", default_value="false"),
             DeclareLaunchArgument("use_sim_time", default_value="false"),
-            DeclareLaunchArgument("crop_min_x", default_value="-2.0"),
-            DeclareLaunchArgument("crop_max_x", default_value="2.0"),
-            DeclareLaunchArgument("crop_min_y", default_value="-2.0"),
-            DeclareLaunchArgument("crop_max_y", default_value="2.0"),
+            DeclareLaunchArgument("crop_min_x", default_value="-0.5"),
+            DeclareLaunchArgument("crop_max_x", default_value="1.0"),
+            DeclareLaunchArgument("crop_min_y", default_value="0.0"),
+            DeclareLaunchArgument("crop_max_y", default_value="1.5"),
             DeclareLaunchArgument("crop_min_z", default_value="-2.0"),
-            DeclareLaunchArgument("crop_max_z", default_value="5.0"),
+            DeclareLaunchArgument("crop_max_z", default_value="2.0"),
             IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(
                     os.path.join(

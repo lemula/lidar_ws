@@ -15,7 +15,9 @@ lidar:
 
       min_distance: 0.5
       max_distance: 60
-      use_lidar_clock: true
+      # Use the ROS host clock so downstream map-age validation is meaningful.
+      # RSAIRY's internal clock is time-since-boot (for example sec=523), not epoch time.
+      use_lidar_clock: false
       dense_points: false
       ts_first_point: true
       start_angle: 0

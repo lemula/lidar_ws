@@ -9,18 +9,56 @@ from launch.actions import (
 )
 from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import LaunchConfiguration, PythonExpression
 from launch_ros.actions import Node
+from launch_ros.parameter_descriptions import ParameterValue
 
 
 def generate_launch_description():
     patchwork_share = Path(get_package_share_directory("excavator_patchwork"))
     height_map_share = Path(get_package_share_directory("excavator_height_map"))
     start_rviz = LaunchConfiguration("start_rviz")
+    crop_min_x = LaunchConfiguration("crop_min_x")
+    crop_max_x = LaunchConfiguration("crop_max_x")
+    crop_min_y = LaunchConfiguration("crop_min_y")
+    crop_max_y = LaunchConfiguration("crop_max_y")
+    crop_min_z = LaunchConfiguration("crop_min_z")
+    crop_max_z = LaunchConfiguration("crop_max_z")
+
+    map_length_x = ParameterValue(
+        PythonExpression(
+            ["float('", crop_max_x, "') - float('", crop_min_x, "')"]
+        ),
+        value_type=float,
+    )
+    map_length_y = ParameterValue(
+        PythonExpression(
+            ["float('", crop_max_y, "') - float('", crop_min_y, "')"]
+        ),
+        value_type=float,
+    )
+    map_center_x = ParameterValue(
+        PythonExpression(
+            ["(float('", crop_max_x, "') + float('", crop_min_x, "')) / 2.0"]
+        ),
+        value_type=float,
+    )
+    map_center_y = ParameterValue(
+        PythonExpression(
+            ["(float('", crop_max_y, "') + float('", crop_min_y, "')) / 2.0"]
+        ),
+        value_type=float,
+    )
 
     return LaunchDescription(
         [
             DeclareLaunchArgument("start_rviz", default_value="true"),
+            DeclareLaunchArgument("crop_min_x", default_value="-2.0"),
+            DeclareLaunchArgument("crop_max_x", default_value="2.0"),
+            DeclareLaunchArgument("crop_min_y", default_value="-2.0"),
+            DeclareLaunchArgument("crop_max_y", default_value="2.0"),
+            DeclareLaunchArgument("crop_min_z", default_value="-2.0"),
+            DeclareLaunchArgument("crop_max_z", default_value="5.0"),
             # Scope the nested start_rviz=false setting so that it cannot
             # overwrite this launch file's start_rviz argument.
             GroupAction(
@@ -34,7 +72,15 @@ def generate_launch_description():
                                 / "full_pipeline.launch.py"
                             )
                         ),
-                        launch_arguments={"start_rviz": "false"}.items(),
+                        launch_arguments={
+                            "start_rviz": "false",
+                            "crop_min_x": crop_min_x,
+                            "crop_max_x": crop_max_x,
+                            "crop_min_y": crop_min_y,
+                            "crop_max_y": crop_max_y,
+                            "crop_min_z": crop_min_z,
+                            "crop_max_z": crop_max_z,
+                        }.items(),
                     )
                 ],
             ),
@@ -44,7 +90,13 @@ def generate_launch_description():
                 name="excavator_height_map",
                 output="screen",
                 parameters=[
-                    str(height_map_share / "config" / "height_map.yaml")
+                    str(height_map_share / "config" / "height_map.yaml"),
+                    {
+                        "length_x": map_length_x,
+                        "length_y": map_length_y,
+                        "center_x": map_center_x,
+                        "center_y": map_center_y,
+                    },
                 ],
             ),
             Node(
