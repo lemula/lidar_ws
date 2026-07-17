@@ -1,0 +1,18 @@
+frames:
+  fixed: world
+  lidar: rslidar
+  base: base_link
+  bucket_tip: bucket_tip
+
+topics:
+  raw_points: /localmap/world_points
+  cropped_points: /localmap/cropped_points
+  environment_points: /localmap/body_filtered_points
+  ground_points: /terrain/ground_points
+  nonground_points: /terrain/nonground_points
+  grid_map: /terrain/grid_map
+  joint_states: /joint_states
+  bucket_tip_pose: /bucket_tip_pose_world
+  dig_point: /digging/entry_point
+  dig_point_info: /digging/entry_point_info
+  dig_markers: /digging/markers
