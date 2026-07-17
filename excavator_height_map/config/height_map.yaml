@@ -1,0 +1,18 @@
+excavator_height_map:
+  ros__parameters:
+    frame_id: world
+    ground_topic: /terrain/ground_points
+    nonground_topic: /terrain/nonground_points
+    grid_map_topic: /terrain/grid_map
+
+    resolution: 0.10
+    length_x: 14.0
+    length_y: 16.0
+    center_x: 5.0
+    center_y: 0.0
+
+    minimum_ground_points_per_cell: 3
+    fill_radius_cells: 2
+    maximum_slope_deg: 25.0
+    maximum_roughness: 0.08
+    maximum_step_height: 0.25

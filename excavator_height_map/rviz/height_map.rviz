@@ -1,0 +1,98 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Class: rviz_default_plugins/Grid
+      Enabled: true
+      Name: ReferenceGrid
+      Plane: XY
+      Cell Size: 1
+      Plane Cell Count: 30
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Class: grid_map_rviz_plugin/GridMap
+      Color Layer: soil_height
+      Color Transformer: GridMapLayer
+      Enabled: true
+      Height Layer: ground_height
+      Height Transformer: GridMapLayer
+      History Length: 1
+      Max Color: 255; 40; 20
+      Min Color: 20; 110; 255
+      Name: ExcavatorHeightMap
+      Show Grid Lines: false
+      Topic: /terrain/grid_map
+      Unreliable: false
+      Use Rainbow: true
+      Value: true
+    - Alpha: 0.35
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz_default_plugins/PointCloud2
+      Color: 30; 255; 30
+      Color Transformer: FlatColor
+      Decay Time: 0
+      Enabled: true
+      Name: GroundPoints
+      Position Transformer: XYZ
+      Selectable: true
+      Size (Pixels): 2
+      Size (m): 0.015
+      Style: Points
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /terrain/ground_points
+      Use Fixed Frame: true
+      Value: true
+    - Alpha: 0.35
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz_default_plugins/PointCloud2
+      Color: 255; 45; 25
+      Color Transformer: FlatColor
+      Decay Time: 0
+      Enabled: true
+      Name: NongroundPoints
+      Position Transformer: XYZ
+      Selectable: true
+      Size (Pixels): 2
+      Size (m): 0.015
+      Style: Points
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /terrain/nonground_points
+      Use Fixed Frame: true
+      Value: true
+  Enabled: true
+  Global Options:
+    Background Color: 48; 48; 48
+    Fixed Frame: world
+    Frame Rate: 30
+  Name: root
+  Tools:
+    - Class: rviz_default_plugins/Interact
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/Select
+  Value: true
+Views:
+  Current:
+    Class: rviz_default_plugins/Orbit
+    Distance: 18
+    Focal Point:
+      X: 4
+      Y: 0
+      Z: 0
+    Name: Current View
+    Pitch: 0.65
+    Yaw: 3.14
+Window Geometry:
+  Height: 900
+  Width: 1300

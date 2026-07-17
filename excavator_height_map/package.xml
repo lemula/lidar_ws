@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>excavator_height_map</name>
+  <version>0.2.0</version>
+  <description>Grid-map elevation builder for segmented excavator terrain point clouds.</description>
+  <maintainer email="user@example.com">zhaoshuai</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>grid_map_core</depend>
+  <depend>grid_map_msgs</depend>
+  <depend>rclcpp</depend>
+  <depend>sensor_msgs</depend>
+  <depend>std_msgs</depend>
+
+  <exec_depend>ament_index_python</exec_depend>
+  <exec_depend>excavator_patchwork</exec_depend>
+  <exec_depend>grid_map_rviz_plugin</exec_depend>
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>rviz2</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

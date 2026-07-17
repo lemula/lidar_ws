@@ -1,0 +1,11 @@
+dig_point_scaffold:
+  ros__parameters:
+    world_frame: world
+    bucket_tip_frame: bucket_tip
+    enable_selection: false
+    maximum_map_age_sec: 0.50
+    minimum_confidence: 0.70
+    minimum_reach_m: 1.0
+    maximum_reach_m: 10.0
+    edge_margin_m: 0.50
+
