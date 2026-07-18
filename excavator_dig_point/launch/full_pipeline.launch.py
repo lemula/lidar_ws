@@ -19,6 +19,7 @@ def generate_launch_description():
     crop_max_y = LaunchConfiguration("crop_max_y")
     crop_min_z = LaunchConfiguration("crop_min_z")
     crop_max_z = LaunchConfiguration("crop_max_z")
+    enable_body_filter = LaunchConfiguration("enable_body_filter")
 
     return LaunchDescription(
         [
@@ -29,6 +30,7 @@ def generate_launch_description():
             DeclareLaunchArgument("crop_max_y", default_value="1.5"),
             DeclareLaunchArgument("crop_min_z", default_value="-2.0"),
             DeclareLaunchArgument("crop_max_z", default_value="2.0"),
+            DeclareLaunchArgument("enable_body_filter", default_value="true"),
             GroupAction(
                 scoped=True,
                 actions=[
@@ -44,6 +46,7 @@ def generate_launch_description():
                             "crop_max_y": crop_max_y,
                             "crop_min_z": crop_min_z,
                             "crop_max_z": crop_max_z,
+                            "enable_body_filter": enable_body_filter,
                         }.items(),
                     )
                 ],

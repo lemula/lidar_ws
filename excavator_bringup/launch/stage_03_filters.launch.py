@@ -24,6 +24,7 @@ def generate_launch_description():
         "crop_max_z",
         "body_padding",
         "body_scale",
+        "enable_body_filter",
         "use_sim_time",
     )
     arguments = {name: LaunchConfiguration(name) for name in argument_names}
@@ -48,6 +49,7 @@ def generate_launch_description():
             DeclareLaunchArgument("crop_max_z", default_value="2.0"),
             DeclareLaunchArgument("body_padding", default_value="0.02"),
             DeclareLaunchArgument("body_scale", default_value="1.0"),
+            DeclareLaunchArgument("enable_body_filter", default_value="true"),
             DeclareLaunchArgument("use_sim_time", default_value="false"),
             IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(

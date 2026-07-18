@@ -24,6 +24,7 @@ def generate_launch_description():
     crop_max_y = LaunchConfiguration("crop_max_y")
     crop_min_z = LaunchConfiguration("crop_min_z")
     crop_max_z = LaunchConfiguration("crop_max_z")
+    enable_body_filter = LaunchConfiguration("enable_body_filter")
 
     map_length_x = ParameterValue(
         PythonExpression(
@@ -59,6 +60,7 @@ def generate_launch_description():
             DeclareLaunchArgument("crop_max_y", default_value="2.0"),
             DeclareLaunchArgument("crop_min_z", default_value="-2.0"),
             DeclareLaunchArgument("crop_max_z", default_value="5.0"),
+            DeclareLaunchArgument("enable_body_filter", default_value="true"),
             # Scope the nested start_rviz=false setting so that it cannot
             # overwrite this launch file's start_rviz argument.
             GroupAction(
@@ -80,6 +82,7 @@ def generate_launch_description():
                             "crop_max_y": crop_max_y,
                             "crop_min_z": crop_min_z,
                             "crop_max_z": crop_max_z,
+                            "enable_body_filter": enable_body_filter,
                         }.items(),
                     )
                 ],

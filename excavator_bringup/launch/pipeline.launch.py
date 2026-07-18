@@ -31,6 +31,7 @@ def generate_launch_description():
     start_ground = LaunchConfiguration("start_ground")
     start_height_map = LaunchConfiguration("start_height_map")
     start_dig_point = LaunchConfiguration("start_dig_point")
+    enable_body_filter = LaunchConfiguration("enable_body_filter")
     crop_arguments = {
         name: LaunchConfiguration(name)
         for name in (
@@ -51,6 +52,7 @@ def generate_launch_description():
             DeclareLaunchArgument("start_ground", default_value="true"),
             DeclareLaunchArgument("start_height_map", default_value="true"),
             DeclareLaunchArgument("start_dig_point", default_value="true"),
+            DeclareLaunchArgument("enable_body_filter", default_value="true"),
             DeclareLaunchArgument("crop_min_x", default_value="-0.5"),
             DeclareLaunchArgument("crop_max_x", default_value="1.0"),
             DeclareLaunchArgument("crop_min_y", default_value="0.0"),
@@ -70,7 +72,11 @@ def generate_launch_description():
             stage(
                 "stage_03_filters.launch.py",
                 IfCondition(start_filters),
-                {"rviz": "false", **crop_arguments},
+                {
+                    "rviz": "false",
+                    "enable_body_filter": enable_body_filter,
+                    **crop_arguments,
+                },
             ),
             stage(
                 "stage_04_ground.launch.py",

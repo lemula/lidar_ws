@@ -5,7 +5,7 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import IfElseSubstitution, LaunchConfiguration
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 
@@ -37,6 +37,12 @@ def generate_launch_description():
     crop_max_y = LaunchConfiguration("crop_max_y")
     crop_min_z = LaunchConfiguration("crop_min_z")
     crop_max_z = LaunchConfiguration("crop_max_z")
+    enable_body_filter = LaunchConfiguration("enable_body_filter")
+    crop_output_topic = IfElseSubstitution(
+        enable_body_filter,
+        "/localmap/cropped_points",
+        "/localmap/body_filtered_points",
+    )
 
     return LaunchDescription(
         [
@@ -54,6 +60,7 @@ def generate_launch_description():
             DeclareLaunchArgument("crop_max_y", default_value="1.5"),
             DeclareLaunchArgument("crop_min_z", default_value="-2.0"),
             DeclareLaunchArgument("crop_max_z", default_value="2.0"),
+            DeclareLaunchArgument("enable_body_filter", default_value="true"),
             IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(
                     os.path.join(
@@ -71,7 +78,7 @@ def generate_launch_description():
                 output="screen",
                 remappings=[
                     ("input", "/localmap/world_points"),
-                    ("output", "/localmap/cropped_points"),
+                    ("output", crop_output_topic),
                 ],
                 parameters=[
                     {
@@ -124,6 +131,7 @@ def generate_launch_description():
                         "use_sim_time": use_sim_time,
                     },
                 ],
+                condition=IfCondition(enable_body_filter),
             ),
             Node(
                 package="rviz2",

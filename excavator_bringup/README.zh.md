@@ -26,3 +26,11 @@ ros2 launch excavator_bringup pipeline.launch.py
 ```
 
 完整流水线同样支持 `rviz:=false`，并可用 `start_lidar:=false` 等参数关闭指定阶段。
+
+机体剔除默认启用。关闭机体剔除时仍保留裁剪，并把裁剪结果直接发布到
+`/localmap/body_filtered_points`，后续地面分割、高度图和入铲点不需要改话题：
+
+```bash
+ros2 launch excavator_bringup stage_03_filters.launch.py enable_body_filter:=false
+ros2 launch excavator_bringup pipeline.launch.py enable_body_filter:=false
+```

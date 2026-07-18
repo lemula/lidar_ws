@@ -3,7 +3,8 @@ import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
-from launch.substitutions import LaunchConfiguration
+from launch.conditions import IfCondition
+from launch.substitutions import IfElseSubstitution, LaunchConfiguration
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 
@@ -32,6 +33,10 @@ def generate_launch_description():
     body_padding = LaunchConfiguration("body_padding")
     body_scale = LaunchConfiguration("body_scale")
     use_sim_time = LaunchConfiguration("use_sim_time")
+    enable_body_filter = LaunchConfiguration("enable_body_filter")
+    crop_output_topic = IfElseSubstitution(
+        enable_body_filter, cropped_topic, output_topic
+    )
 
     return LaunchDescription(
         [
@@ -52,6 +57,7 @@ def generate_launch_description():
             DeclareLaunchArgument("crop_max_z", default_value="5.0"),
             DeclareLaunchArgument("body_padding", default_value="0.02"),
             DeclareLaunchArgument("body_scale", default_value="1.0"),
+            DeclareLaunchArgument("enable_body_filter", default_value="true"),
             DeclareLaunchArgument("use_sim_time", default_value="false"),
             Node(
                 package="pcl_ros",
@@ -60,7 +66,7 @@ def generate_launch_description():
                 output="screen",
                 remappings=[
                     ("input", input_topic),
-                    ("output", cropped_topic),
+                    ("output", crop_output_topic),
                 ],
                 parameters=[
                     {
@@ -92,6 +98,7 @@ def generate_launch_description():
                         "use_sim_time": use_sim_time,
                     },
                 ],
+                condition=IfCondition(enable_body_filter),
             ),
         ]
     )
